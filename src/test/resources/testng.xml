@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Selenium UI Automation Framework">
+    <test name="Sample E-Commerce App">
+        <classes>
+            <class name="tests.BaseTest"/>
+            <class name="tests.LoginPageTest">
+            </class>
+        </classes>
+    </test>
+</suite>
