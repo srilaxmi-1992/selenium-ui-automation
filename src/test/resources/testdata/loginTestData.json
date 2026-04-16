@@ -1,0 +1,40 @@
+{
+  "testData": [
+    {
+      "id": "TC_001",
+      "email": "srilaxmilucky123@gmail.com",
+      "password": "Naresh@12345",
+      "expectedMessage": "Login Successfully"
+    },
+    {
+      "id": "TC_002",
+      "email": "srilaxmilucky123@gmail.com",
+      "password": "Naresh@12345",
+      "expectedMessage": ""
+    },
+    {
+      "id": "TC_003",
+      "email": "abc@gmail.com",
+      "password": "wrongPassword123",
+      "expectedMessage": "Incorrect email or password."
+    },
+    {
+      "id": "TC_004",
+      "email": "srilaxmilucky123@gmail.com",
+      "password": "Password123",
+      "expectedMessage": "Incorrect email or password."
+    },
+    {
+      "id": "TC_005",
+      "email": "",
+      "password": "Naresh@12345",
+      "expectedMessage": "*Email is required"
+    },
+    {
+      "id": "TC_006",
+      "email": "srilaxmilucky123@gmail.com",
+      "password": "",
+      "expectedMessage": "*Password is required"
+    }
+  ]
+}
