@@ -2,39 +2,51 @@
   "testData": [
     {
       "id": "TC_001",
+      "description": "Valid email and password",
       "email": "srilaxmilucky123@gmail.com",
       "password": "Naresh@12345",
-      "expectedMessage": "Login Successfully"
+      "expectedMessage": "Login Successfully",
+      "assertionType": "SUCCESS_TOAST"
     },
     {
       "id": "TC_002",
+      "description": "Valid credentials redirect to dashboard",
       "email": "srilaxmilucky123@gmail.com",
       "password": "Naresh@12345",
-      "expectedMessage": ""
+      "expectedMessage": "dashboard",
+      "assertionType": "DASHBOARD_URL"
     },
     {
       "id": "TC_003",
+      "description": "Invalid email with valid password",
       "email": "abc@gmail.com",
       "password": "wrongPassword123",
-      "expectedMessage": "Incorrect email or password."
+      "expectedMessage": "Incorrect email or password.",
+      "assertionType": "ERROR_TOAST"
     },
     {
       "id": "TC_004",
+      "description": "Valid email with invalid password",
       "email": "srilaxmilucky123@gmail.com",
       "password": "Password123",
-      "expectedMessage": "Incorrect email or password."
+      "expectedMessage": "Incorrect email or password.",
+      "assertionType": "ERROR_TOAST"
     },
     {
       "id": "TC_005",
+      "description": "Empty email field",
       "email": "",
       "password": "Naresh@12345",
-      "expectedMessage": "*Email is required"
+      "expectedMessage": "*Email is required",
+      "assertionType": "EMAIL_FIELD_ERROR"
     },
     {
       "id": "TC_006",
+      "description": "Empty password field",
       "email": "srilaxmilucky123@gmail.com",
       "password": "",
-      "expectedMessage": "*Password is required"
+      "expectedMessage": "*Password is required",
+      "assertionType": "PASSWORD_FIELD_ERROR"
     }
   ]
 }

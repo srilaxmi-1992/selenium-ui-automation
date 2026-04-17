@@ -5,8 +5,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -19,8 +17,7 @@ import java.time.Duration;
 
 public class BaseTest {
 
-    private static final Logger log = LoggerFactory.getLogger(BaseTest.class);
-    WebDriver driver;
+    protected WebDriver driver;
 
     @BeforeMethod()
     public void setup() {
@@ -28,20 +25,13 @@ public class BaseTest {
         String url = ConfigReader.getProperty("url");
         long timeout = Long.parseLong(ConfigReader.getProperty("timeout"));
 
-        switch (browser.toLowerCase()) {
-            case "chrome":
-                driver = new ChromeDriver();
-                break;
-            case "firefox":
-                driver = new FirefoxDriver();
-                break;
-            case "edge":
-                driver = new EdgeDriver();
-                break;
-            default:
-                throw new RuntimeException("Unsupported browser: " + browser);
-        }
-
+        driver = switch (browser.toLowerCase()) {
+            case "chrome"  -> new ChromeDriver();
+            case "firefox" -> new FirefoxDriver();
+            case "edge"    -> new EdgeDriver();
+            default        -> throw new RuntimeException(
+                    "Unsupported browser: " + browser);
+        };
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(timeout));
         driver.get(url);

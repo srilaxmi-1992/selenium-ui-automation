@@ -7,7 +7,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import utils.SeleniumUtils;
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class MyCartPage {
@@ -40,6 +40,15 @@ public class MyCartPage {
 
     public void waitForContinueShoppingBtn() {
         utils.waitForElement(continueShoppingBtn);
+    }
+
+    public void clickContinueShoppingButton() {
+        waitForContinueShoppingBtn();
+        utils.click(continueShoppingBtn);
+    }
+
+    public boolean isCartEmpty() {
+        return productNames.isEmpty();
     }
 
     public void clickCheckoutButton() {

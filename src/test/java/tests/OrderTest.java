@@ -3,6 +3,7 @@ package tests;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 import pages.MyCartPage;
 import pages.OrderPage;
 import pages.PlaceOrderPage;
@@ -14,30 +15,80 @@ import java.util.stream.Collectors;
 
 public class OrderTest extends BaseTest {
 
+    @Test(description = "Validate product names and prices on order confirmation",
+            groups = {"requiresLogin"})
+    public void validateProductDetailsOnOrderConfirmation() {
+        ProductsDashboardPage dashboard = new ProductsDashboardPage(driver);
+        MyCartPage cart                 = new MyCartPage(driver);
+        PlaceOrderPage placeOrderPage   = new PlaceOrderPage(driver);
+        OrderPage orderPage             = new OrderPage(driver);
 
-    @Test(groups = {"requiresLogin"})
-    public void validateProductDetailsOnPlaceOrder() {
+        JsonNode data        = JSONReader.getTestData("productsTestData.json", "PRODUCTS_TC_002");
+        List<String> names   = JSONReader.extractProductNames(data).stream()
+                .map(String::toUpperCase)
+                .collect(Collectors.toList());
+        List<String> prices  = JSONReader.extractProductPrices(data);
+        String expectedToast = data.get("expectedMessage").asText();
 
-        ProductsDashboardPage dashboardPage = new ProductsDashboardPage(driver);
-        MyCartPage myCartPage = new MyCartPage(driver);
-        PlaceOrderPage placeOrderPage = new PlaceOrderPage(driver);
-        OrderPage orderPage = new OrderPage(driver);
+        dashboard.addProductsToCart(JSONReader.extractProductNames(data), expectedToast);
+        dashboard.clickCartButton();
+        cart.waitForContinueShoppingBtn();
+        cart.clickCheckoutButton();
+        placeOrderPage.placeOrder(data.get("order"));
 
-        JsonNode testCaseData = JSONReader.getTestData("productsTestData.json", "PRODUCTS_TC_002");
-        List<String> productNames = JSONReader.extractProductNames(testCaseData);
-        List<String> productPrices = JSONReader.extractProductPrices(testCaseData);
-        String expectedMessage = testCaseData.get("expectedMessage").asText();
-        dashboardPage.addProductsToCart(productNames, expectedMessage);
-        dashboardPage.clickCartButton();
-        myCartPage.waitForContinueShoppingBtn();
-        myCartPage.clickCheckoutButton();
+        // SoftAssert — both names and prices verified independently
+        SoftAssert soft = new SoftAssert();
+        soft.assertTrue(orderPage.getProductNames().containsAll(names),
+                "One or more product names missing on order confirmation");
+        soft.assertTrue(orderPage.getProductPrices().containsAll(prices),
+                "One or more product prices missing on order confirmation");
+        soft.assertAll();
+    }
 
-        JsonNode order = testCaseData.get("order");
-        placeOrderPage.placeOrder(order);
+    @Test(description = "Validate order confirmation heading contains 'Thankyou'",
+            groups = {"requiresLogin"})
+    public void validateOrderConfirmationHeading() {
+        ProductsDashboardPage dashboard = new ProductsDashboardPage(driver);
+        MyCartPage cart                 = new MyCartPage(driver);
+        PlaceOrderPage placeOrderPage   = new PlaceOrderPage(driver);
+        OrderPage orderPage             = new OrderPage(driver);
 
-        productNames = productNames.stream().map(String::toUpperCase).collect(Collectors.toList());
-        Assert.assertTrue(orderPage.getProductNames().containsAll(productNames));
-        Assert.assertTrue(orderPage.getProductPrices().containsAll(productPrices));
+        JsonNode data        = JSONReader.getTestData("productsTestData.json", "PRODUCTS_TC_002");
+        List<String> names   = JSONReader.extractProductNames(data);
+        String expectedToast = data.get("expectedMessage").asText();
 
+        dashboard.addProductsToCart(names, expectedToast);
+        dashboard.clickCartButton();
+        cart.waitForContinueShoppingBtn();
+        cart.clickCheckoutButton();
+        placeOrderPage.placeOrder(data.get("order"));
+
+        String heading = orderPage.getHeadingText();
+        Assert.assertTrue(heading.toLowerCase().contains("thankyou"),
+                "Order confirmation heading not found. Actual: " + heading);
+    }
+
+    @Test(description = "Validate URL changes to order confirmation page after placing order",
+            groups = {"requiresLogin"})
+    public void validateOrderConfirmationUrl() {
+        ProductsDashboardPage dashboard = new ProductsDashboardPage(driver);
+        MyCartPage cart                 = new MyCartPage(driver);
+        PlaceOrderPage placeOrderPage   = new PlaceOrderPage(driver);
+        OrderPage orderPage             = new OrderPage(driver);
+
+        JsonNode data        = JSONReader.getTestData("productsTestData.json", "PRODUCTS_TC_002");
+        List<String> names   = JSONReader.extractProductNames(data);
+        String expectedToast = data.get("expectedMessage").asText();
+
+        dashboard.addProductsToCart(names, expectedToast);
+        dashboard.clickCartButton();
+        cart.waitForContinueShoppingBtn();
+        cart.clickCheckoutButton();
+        placeOrderPage.placeOrder(data.get("order"));
+
+        orderPage.waitForHeading();
+        String currentUrl = orderPage.getPageUrl();
+        Assert.assertTrue(currentUrl.contains("thanks"),
+                "URL did not change to order confirmation. Actual URL: " + currentUrl);
     }
 }

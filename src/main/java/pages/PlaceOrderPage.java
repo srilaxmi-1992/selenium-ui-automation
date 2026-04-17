@@ -9,7 +9,6 @@ import org.openqa.selenium.support.PageFactory;
 import utils.SeleniumUtils;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class PlaceOrderPage {
@@ -87,7 +86,16 @@ public class PlaceOrderPage {
                 .collect(Collectors.toList());
     }
 
+    public boolean areAllFormFieldsDisplayed() {
+        return utils.isElementDisplayed(cvvTxtBox)
+                && utils.isElementDisplayed(nameTxtBox)
+                && utils.isElementDisplayed(emailIdTxtBox)
+                && utils.isElementDisplayed(countrySuggestBox);
+    }
 
+    public int getProductCount() {
+        return productNames.size();
+    }
 
     public void placeOrder(JsonNode order){
 

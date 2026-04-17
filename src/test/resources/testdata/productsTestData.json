@@ -26,7 +26,7 @@
           "price": "$55000"
         }
       ],
-      "order" : {
+      "order": {
         "name": "Kavya",
         "cvv": "259",
         "email": "srilaxmilucky123@gmail.com",
@@ -34,6 +34,16 @@
       },
       "expectedMessage": "Product Added To Cart",
       "total": "$66500"
+    },
+    {
+      "id": "PRODUCTS_TC_003",
+      "products": [
+        {
+          "name": "ADIDAS ORIGINAL",
+          "price": "$11500"
+        }
+      ],
+      "expectedMessage": "Product Added To Cart"
     }
   ]
 }

@@ -9,6 +9,7 @@ import utils.SeleniumUtils;
 
 import java.util.BitSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ProductsDashboardPage {
 
@@ -38,6 +39,17 @@ public class ProductsDashboardPage {
 
     @FindBy(css = "button[routerlink*='cart']")
     WebElement cartBtn;
+
+    // Add this FindBy field
+    @FindBy(xpath = "//div[@class='card']//b")
+    List<WebElement> productNameElements;
+
+    // Add this method
+    public List<String> getProductNames() {
+        return productNameElements.stream()
+                .map(element -> element.getText())
+                .collect(Collectors.toList());
+    }
 
     public String getSuccessMessage() {
         return utils.getText(successMsg);

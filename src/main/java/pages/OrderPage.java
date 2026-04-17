@@ -3,7 +3,6 @@ package pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v145.page.Page;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import utils.SeleniumUtils;
@@ -21,15 +20,21 @@ public class OrderPage {
         PageFactory.initElements(driver, this);
     }
 
-    @FindBy(css ="table.order-summary td.line-item.m-3 div.title")
+    @FindBy(css = "h1.hero-primary")
+    WebElement headingElement;
+
+    @FindBy(css = "table.order-summary td.line-item.m-3 div.title")
     List<WebElement> productNames;
 
-    @FindBy(css ="table.order-summary td.line-item[style*='right'] div.title")
+    @FindBy(css = "table.order-summary td.line-item[style*='right'] div.title")
     List<WebElement> productPrices;
+
+    @FindBy(xpath = "//button[normalize-space()='Click To Download Order Details in CSV']")
+    WebElement downloadBtn;
 
     By heading = By.cssSelector("h1.hero-primary");
 
-    public void waitForHeading(){
+    public void waitForHeading() {
         utils.waitForElementVisible(heading);
     }
 
@@ -50,5 +55,12 @@ public class OrderPage {
                 .collect(Collectors.toList());
     }
 
+    public String getHeadingText() {
+        waitForHeading();
+        return utils.getText(headingElement);
+    }
 
+    public String getPageUrl() {
+        return driver.getCurrentUrl();
+    }
 }
