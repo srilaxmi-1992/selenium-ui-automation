@@ -1,0 +1,39 @@
+{
+  "testData": [
+    {
+      "id": "PRODUCTS_TC_001",
+      "products": [
+        {
+          "name": "ADIDAS ORIGINAL",
+          "price": "$11500"
+        },
+        {
+          "name": "iphone 13 pro",
+          "price": "$11500"
+        }
+      ],
+      "expectedMessage": "Product Added To Cart"
+    },
+    {
+      "id": "PRODUCTS_TC_002",
+      "products": [
+        {
+          "name": "ADIDAS ORIGINAL",
+          "price": "$11500"
+        },
+        {
+          "name": "iphone 13 pro",
+          "price": "$55000"
+        }
+      ],
+      "order" : {
+        "name": "Kavya",
+        "cvv": "259",
+        "email": "srilaxmilucky123@gmail.com",
+        "country": "India"
+      },
+      "expectedMessage": "Product Added To Cart",
+      "total": "$66500"
+    }
+  ]
+}

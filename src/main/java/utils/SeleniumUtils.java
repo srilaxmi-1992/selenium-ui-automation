@@ -1,8 +1,9 @@
 package utils;
 
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -12,9 +13,10 @@ public class SeleniumUtils {
     WebDriver driver;
     WebDriverWait wait;
 
+
     public SeleniumUtils(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
     /**
@@ -67,5 +69,77 @@ public class SeleniumUtils {
         }
     }
 
+    public boolean isElementEnabled(WebElement element) {
+        try {
+            return element.isEnabled();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean isElementDisplayed(WebElement element) {
+        try {
+            return element.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean isElementEnabled(By locator) {
+        try {
+            WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+            return element.isEnabled();
+        } catch (Exception e) {
+            System.out.println("Exception --> " + e.getMessage());
+            return false;
+        }
+    }
+
+    public void clickUsingActions(By locator) {
+        try {
+            Actions actions = new Actions(driver);
+            WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+            actions.moveToElement(element)
+                    .click()
+                    .build()
+                    .perform();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to click element: " + locator, e);
+        }
+    }
+
+
+    public void waitForOverlayToDisappear(By overlay) {
+        try {
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(overlay));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to wait for an element to disappear " + e.getMessage());
+        }
+    }
+
+    private FluentWait<WebDriver> getWait() {
+        return new FluentWait<>(driver)
+                .withTimeout(Duration.ofSeconds(10))
+                .pollingEvery(Duration.ofSeconds(1))
+                .ignoring(NoSuchElementException.class)
+                .ignoring(StaleElementReferenceException.class);
+    }
+
+    public WebElement waitForElement(WebElement element) {
+        return getWait().until(driver -> {
+            try {
+                return element.isDisplayed() ? element : null;
+            } catch (StaleElementReferenceException e) {
+                return null;
+            }
+        });
+    }
+
+    public WebElement waitForElementVisible(By locator) {
+        return getWait().until(driver -> {
+            WebElement element = driver.findElement(locator);
+            return element.isDisplayed() ? element : null;
+        });
+    }
 
 }

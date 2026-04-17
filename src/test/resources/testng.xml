@@ -2,9 +2,11 @@
 <suite name="Selenium UI Automation Framework">
     <test name="Sample E-Commerce App">
         <classes>
-            <class name="tests.BaseTest"/>
-            <class name="tests.LoginPageTest">
-            </class>
+            <class name="tests.LoginPageTest"/>
+            <class name="tests.ProductsDashboardTest"/>
+            <class name="tests.MyCartTest"/>
+            <class name="tests.PlaceOrderTest"></class>
+            <class name="tests.OrderTest"></class>
         </classes>
     </test>
 </suite>
