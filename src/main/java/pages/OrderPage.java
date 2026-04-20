@@ -5,9 +5,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 import utils.SeleniumUtils;
 
 import java.util.List;
@@ -20,21 +17,14 @@ public class OrderPage {
     WebDriver driver;
     SeleniumUtils utils;
 
-    @FindBy(css = "h1.hero-primary")
-    WebElement headingElement;
-
-    @FindBy(css = "table.order-summary td.line-item.m-3 div.title")
-    List<WebElement> productNames;
-
-    @FindBy(css = "table.order-summary td.line-item[style*='right'] div.title")
-    List<WebElement> productPrices;
-
+    private By headingElement = By.cssSelector("h1.hero-primary");
+    private By productNames = By.cssSelector("table.order-summary td.line-item.m-3 div.title");
+    private By productPrices = By.cssSelector("table.order-summary td.line-item[style*='right'] div.title");
     private By heading = By.cssSelector("h1.hero-primary");
 
     public OrderPage(WebDriver driver) {
         this.driver = driver;
         this.utils  = new SeleniumUtils(driver);
-        PageFactory.initElements(driver, this);
         log.debug("OrderPage initialised");
     }
 
@@ -56,8 +46,8 @@ public class OrderPage {
     @Step("Get confirmed product names")
     public List<String> getProductNames() {
         waitForHeading();
-        List<String> names = productNames.stream()
-                .map(e -> e.getText().trim().toUpperCase())
+        List<String> names = utils.getElementsText(productNames).stream()
+                .map(text -> text.toUpperCase())
                 .collect(Collectors.toList());
         log.debug("Order confirmation product names: {}", names);
         return names;
@@ -66,8 +56,8 @@ public class OrderPage {
     @Step("Get confirmed product prices")
     public List<String> getProductPrices() {
         waitForHeading();
-        List<String> prices = productPrices.stream()
-                .map(e -> e.getText()
+        List<String> prices = utils.getElementsText(productPrices).stream()
+                .map(text -> text
                         .replaceAll(".*MRP", "")
                         .replaceAll("\\s+", ""))
                 .collect(Collectors.toList());

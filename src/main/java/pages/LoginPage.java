@@ -3,10 +3,8 @@ package pages;
 import io.qameta.allure.Step;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 import utils.SeleniumUtils;
 
 public class LoginPage {
@@ -16,28 +14,16 @@ public class LoginPage {
     WebDriver driver;
     SeleniumUtils utils;
 
-    @FindBy(id = "userEmail")
-    WebElement email;
-
-    @FindBy(id = "userPassword")
-    WebElement password;
-
-    @FindBy(id = "login")
-    WebElement login;
-
-    @FindBy(xpath = "//input[@id='userEmail']/following-sibling::div[@class='invalid-feedback']/div")
-    WebElement invalidEmailTxt;
-
-    @FindBy(xpath = "//input[@id='userPassword']/following-sibling::div[@class='invalid-feedback']/div")
-    WebElement invalidPasswordTxt;
-
-    @FindBy(xpath = "//div[@id='toast-container']//div[contains(@class, 'toast-error')]")
-    WebElement errorMsg;
+    private By email = By.id("userEmail");
+    private By password = By.id("userPassword");
+    private By login = By.id("login");
+    private By invalidEmailTxt = By.xpath("//input[@id='userEmail']/following-sibling::div[@class='invalid-feedback']/div");
+    private By invalidPasswordTxt = By.xpath("//input[@id='userPassword']/following-sibling::div[@class='invalid-feedback']/div");
+    private By errorMsg = By.xpath("//div[@id='toast-container']//div[contains(@class, 'toast-error')]");
 
     public LoginPage(WebDriver driver) {
         this.driver = driver;
         this.utils  = new SeleniumUtils(driver);
-        PageFactory.initElements(driver, this);
         log.debug("LoginPage initialised");
     }
 

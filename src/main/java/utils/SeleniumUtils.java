@@ -9,6 +9,8 @@ import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SeleniumUtils {
 
@@ -16,44 +18,61 @@ public class SeleniumUtils {
 
     WebDriver driver;
     WebDriverWait wait;
+    private Duration timeout = Duration.ofSeconds(15);
 
     public SeleniumUtils(WebDriver driver) {
         this.driver = driver;
-        this.wait   = new WebDriverWait(driver, Duration.ofSeconds(15));
+        this.wait = new WebDriverWait(driver, timeout);
     }
 
-    public void click(WebElement element) {
+    private FluentWait<WebDriver> getWait() {
+        return new FluentWait<>(driver)
+                .withTimeout(timeout)
+                .pollingEvery(Duration.ofMillis(500))
+                .ignoring(NoSuchElementException.class)
+                .ignoring(StaleElementReferenceException.class);
+    }
+
+    public WebElement waitForElementVisible(By locator) {
+        log.debug("FluentWait for locator visibility: {}", locator);
+        return getWait().until(driver -> {
+            WebElement el = driver.findElement(locator);
+            return el.isDisplayed() ? el : null;
+        });
+    }
+
+    public void click(By locator) {
         try {
-            WebElement el = wait.until(ExpectedConditions.elementToBeClickable(element));
+            WebElement el = wait.until(ExpectedConditions.elementToBeClickable(locator));
             el.click();
-            log.debug("Clicked element: {}", element);
+            log.debug("Clicked element: {}", el);
         } catch (Exception e) {
-            log.error("Failed to click element: {}", element, e);
-            throw new RuntimeException("Failed to click element: " + element, e);
+            log.error("Failed to click element: {}", locator, e);
+            throw new RuntimeException("Failed to click element: " + locator, e);
         }
     }
 
-    public void type(WebElement element, String text) {
+    public void type(By locator, String text) {
         try {
-            WebElement el = wait.until(ExpectedConditions.visibilityOf(element));
-            el.clear();
-            el.sendKeys(text);
+            WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+            element.clear();
+            element.sendKeys(text);
             log.debug("Typed into element: {}", element);
         } catch (Exception e) {
-            log.error("Failed to type into element: {}", element, e);
-            throw new RuntimeException("Failed to type into element: " + element, e);
+            log.error("Failed to type into element: {}", locator, e);
+            throw new RuntimeException("Failed to type into element: " + locator, e);
         }
     }
 
-    public String getText(WebElement element) {
+    public String getText(By locator) {
         try {
-            WebElement el = wait.until(ExpectedConditions.visibilityOf(element));
+            WebElement el = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
             String text = el.getText();
-            log.debug("Got text [{}] from element: {}", text, element);
+            log.debug("Got text [{}] from element: {}", text, el);
             return text;
         } catch (Exception e) {
-            log.error("Failed to get text from element: {}", element, e);
-            throw new RuntimeException("Failed to get text from element: " + element, e);
+            log.error("Failed to get text from element: {}", locator, e);
+            throw new RuntimeException("Failed to get text from element: " + locator, e);
         }
     }
 
@@ -80,20 +99,21 @@ public class SeleniumUtils {
         }
     }
 
-    public boolean isElementDisplayed(WebElement element) {
+    public boolean isElementDisplayed(By locator) {
         try {
-            boolean displayed = element.isDisplayed();
-            log.debug("Element displayed: {} — {}", displayed, element);
-            return displayed;
+            WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+            boolean enabled = element.isDisplayed();
+            log.debug("Element displayed by locator {}: {}", locator, enabled);
+            return enabled;
         } catch (Exception e) {
-            log.warn("isElementDisplayed check failed, returning false. Element: {}", element);
+            log.warn("isElementDisplayed check failed, returning false. Element: {}", locator);
             return false;
         }
     }
 
     public boolean isElementEnabled(By locator) {
         try {
-            WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+            WebElement element = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
             boolean enabled = element.isEnabled();
             log.debug("Element enabled by locator {}: {}", locator, enabled);
             return enabled;
@@ -105,8 +125,8 @@ public class SeleniumUtils {
 
     public void clickUsingActions(By locator) {
         try {
-            Actions actions  = new Actions(driver);
-            WebElement el    = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+            Actions actions = new Actions(driver);
+            WebElement el = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
             actions.moveToElement(el).click().build().perform();
             log.debug("Actions click on locator: {}", locator);
         } catch (Exception e) {
@@ -126,31 +146,57 @@ public class SeleniumUtils {
         }
     }
 
-    private FluentWait<WebDriver> getWait() {
-        return new FluentWait<>(driver)
-                .withTimeout(Duration.ofSeconds(10))
-                .pollingEvery(Duration.ofSeconds(1))
-                .ignoring(NoSuchElementException.class)
-                .ignoring(StaleElementReferenceException.class);
-    }
 
-    public WebElement waitForElement(WebElement element) {
-        log.debug("FluentWait for element visibility: {}", element);
+    public WebElement waitForElement(By locator) {
+        log.debug("FluentWait for element visibility: {}", locator);
         return getWait().until(driver -> {
             try {
+                WebElement element = driver.findElement(locator);
                 return element.isDisplayed() ? element : null;
-            } catch (StaleElementReferenceException e) {
+            } catch (Exception e) {
                 log.warn("StaleElementReferenceException while waiting — retrying");
-                return null;
+                throw new RuntimeException("Failed to wait for element : " + e.getMessage());
             }
         });
     }
 
-    public WebElement waitForElementVisible(By locator) {
-        log.debug("FluentWait for locator visibility: {}", locator);
-        return getWait().until(driver -> {
-            WebElement el = driver.findElement(locator);
-            return el.isDisplayed() ? el : null;
-        });
+
+    public int getElementsSize(By locator) {
+        try {
+            List<WebElement> elements = wait.until(
+                    ExpectedConditions.visibilityOfAllElementsLocatedBy(locator)
+            );
+            return elements.size();
+        } catch (Exception e) {
+            log.error("Error while getting element count : {}", locator, e);
+            throw new RuntimeException("Failed to wait for element to disappear: " + e.getMessage());
+        }
+    }
+
+    public List<String> getElementsText(By locator) {
+        List<String> texts = new ArrayList<>();
+
+        try {
+            List<WebElement> elements = wait.until(
+                    ExpectedConditions.visibilityOfAllElementsLocatedBy(locator)
+            );
+            for (WebElement element : elements) {
+                texts.add(element.getText().trim());
+            }
+        } catch (Exception e) {
+            log.error("Error while getting text of all elements : {}", locator, e);
+            throw new RuntimeException("Failed to get text of all elements : " + e.getMessage());
+        }
+
+        return texts;
+    }
+
+    public boolean isElementListEmpty(By locator) {
+        try {
+            return driver.findElements(locator).isEmpty();
+        } catch (Exception e) {
+            log.error("Error checking elements:  {}", locator, e);
+            throw new RuntimeException("Failed to get elements size :  " + e.getMessage());
+        }
     }
 }

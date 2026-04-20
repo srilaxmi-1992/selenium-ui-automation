@@ -6,9 +6,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 import utils.SeleniumUtils;
 
 import java.util.List;
@@ -21,31 +18,17 @@ public class PlaceOrderPage {
     WebDriver driver;
     SeleniumUtils utils;
 
-    @FindBy(css = "div.item__details div.item__title")
-    List<WebElement> productNames;
-
-    @FindBy(css = "div.item__details div.item__price")
-    List<WebElement> productPrices;
-
-    @FindBy(xpath = "//div[normalize-space()='CVV Code ?']/following-sibling::input")
-    WebElement cvvTxtBox;
-
-    @FindBy(xpath = "//div[normalize-space()='Name on Card']/following-sibling::input")
-    WebElement nameTxtBox;
-
-    @FindBy(xpath = "(//div[contains(@class,'user__name')]//input)[1]")
-    WebElement emailIdTxtBox;
-
-    @FindBy(css = "input[placeholder='Select Country']")
-    WebElement countrySuggestBox;
-
-    @FindBy(xpath = "//a[normalize-space()='Place Order']")
-    WebElement placeOrderBtn;
+    private By productNames = By.cssSelector("div.item__details div.item__title");
+    private By productPrices = By.cssSelector("div.item__details div.item__price");
+    private By cvvTxtBox = By.xpath("//div[normalize-space()='CVV Code ?']/following-sibling::input");
+    private By nameTxtBox = By.xpath("//div[normalize-space()='Name on Card']/following-sibling::input");
+    private By emailIdTxtBox = By.xpath("(//div[contains(@class,'user__name')]//input)[1]");
+    private By countrySuggestBox = By.cssSelector("input[placeholder='Select Country']");
+    private By placeOrderBtn = By.xpath("//a[normalize-space()='Place Order']");
 
     public PlaceOrderPage(WebDriver driver) {
         this.driver = driver;
         this.utils  = new SeleniumUtils(driver);
-        PageFactory.initElements(driver, this);
         log.debug("PlaceOrderPage initialised");
     }
 
@@ -107,8 +90,8 @@ public class PlaceOrderPage {
 
     @Step("Get product names on checkout")
     public List<String> getProductNames() {
-        List<String> names = productNames.stream()
-                .map(e -> e.getText().trim().toUpperCase())
+        List<String> names = utils.getElementsText(productNames).stream()
+                .map(text -> text.toUpperCase())
                 .collect(Collectors.toList());
         log.debug("Checkout product names: {}", names);
         return names;
@@ -116,8 +99,8 @@ public class PlaceOrderPage {
 
     @Step("Get product prices on checkout")
     public List<String> getProductPrices() {
-        List<String> prices = productPrices.stream()
-                .map(e -> e.getText()
+        List<String> prices = utils.getElementsText(productPrices).stream()
+                .map(text -> text
                         .replaceAll(".*MRP", "")
                         .replaceAll("\\s+", ""))
                 .collect(Collectors.toList());
@@ -136,7 +119,7 @@ public class PlaceOrderPage {
     }
 
     public int getProductCount() {
-        int count = productNames.size();
+        int count = utils.getElementsSize(productNames);
         log.debug("Product count on checkout page: {}", count);
         return count;
     }

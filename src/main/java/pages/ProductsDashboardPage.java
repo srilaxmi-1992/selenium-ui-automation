@@ -5,13 +5,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 import utils.SeleniumUtils;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ProductsDashboardPage {
 
@@ -20,31 +16,17 @@ public class ProductsDashboardPage {
     WebDriver driver;
     SeleniumUtils utils;
 
-    @FindBy(xpath = "//div[@id='toast-container']//div[contains(@class, 'toast-success')]")
-    WebElement successMsg;
-
-    @FindBy(xpath = "//button[normalize-space()='HOME']")
-    WebElement homeBtn;
-
-    @FindBy(css = "div[class='card']")
-    List<WebElement> productsList;
-
-    @FindBy(xpath = "//div[@class='card']//b")
-    List<WebElement> productNameElements;
-
-    @FindBy(xpath = "//div[@role='alert' and contains(@class,'toast-message')]")
-    WebElement addToCartMessage;
-
-    @FindBy(css = "button[routerlink*='cart'] label")
-    WebElement cartCount;
-
-    @FindBy(css = "button[routerlink*='cart']")
-    WebElement cartBtn;
+    private By successMsg = By.xpath("//div[@id='toast-container']//div[contains(@class, 'toast-success')]");
+    private By homeBtn = By.xpath("//button[normalize-space()='HOME']");
+    private By addToCartMessage = By.xpath("//div[@role='alert' and contains(@class,'toast-message')]");
+    private By cartCount = By.cssSelector("button[routerlink*='cart'] label");
+    private By cartBtn = By.cssSelector("button[routerlink*='cart']");
+    private By productsList = By.cssSelector("div[class='card']");
+    private By productNameElements = By.xpath("//div[@class='card']//b");
 
     public ProductsDashboardPage(WebDriver driver) {
         this.driver = driver;
-        this.utils  = new SeleniumUtils(driver);
-        PageFactory.initElements(driver, this);
+        this.utils = new SeleniumUtils(driver);
         log.debug("ProductsDashboardPage initialised");
     }
 
@@ -69,15 +51,13 @@ public class ProductsDashboardPage {
     }
 
     public int getNumberOfProducts() {
-        int count = productsList.size();
+        int count = utils.getElementsSize(productsList);
         log.debug("Number of products on dashboard: {}", count);
         return count;
     }
 
     public List<String> getProductNames() {
-        List<String> names = productNameElements.stream()
-                .map(WebElement::getText)
-                .collect(Collectors.toList());
+        List<String> names = utils.getElementsText(productNameElements);
         log.debug("Product names on dashboard: {}", names);
         return names;
     }
