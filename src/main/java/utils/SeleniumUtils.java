@@ -153,13 +153,12 @@ public class SeleniumUtils {
             try {
                 WebElement element = driver.findElement(locator);
                 return element.isDisplayed() ? element : null;
-            } catch (Exception e) {
+            } catch (StaleElementReferenceException e) {
                 log.warn("StaleElementReferenceException while waiting — retrying");
-                throw new RuntimeException("Failed to wait for element : " + e.getMessage());
+                return null;
             }
         });
     }
-
 
     public int getElementsSize(By locator) {
         try {
