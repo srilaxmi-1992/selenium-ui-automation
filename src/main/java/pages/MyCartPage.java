@@ -1,5 +1,8 @@
 package pages;
 
+import io.qameta.allure.Step;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -12,14 +15,10 @@ import java.util.stream.Collectors;
 
 public class MyCartPage {
 
+    private static final Logger log = LogManager.getLogger(MyCartPage.class);
+
     WebDriver driver;
     SeleniumUtils utils;
-
-    public MyCartPage(WebDriver driver) {
-        this.driver = driver;
-        this.utils = new SeleniumUtils(driver);
-        PageFactory.initElements(driver, this);
-    }
 
     @FindBy(css = "div[class='cartSection'] h3")
     List<WebElement> productNames;
@@ -38,39 +37,67 @@ public class MyCartPage {
 
     By checkoutBoxLocator = By.xpath("//button[normalize-space()='Checkout']");
 
+    public MyCartPage(WebDriver driver) {
+        this.driver = driver;
+        this.utils  = new SeleniumUtils(driver);
+        PageFactory.initElements(driver, this);
+        log.debug("MyCartPage initialised");
+    }
+
     public void waitForContinueShoppingBtn() {
+        log.debug("Waiting for Continue Shopping button to be visible");
         utils.waitForElement(continueShoppingBtn);
     }
 
+    @Step("Click Continue Shopping")
     public void clickContinueShoppingButton() {
+        log.debug("Clicking Continue Shopping button");
         waitForContinueShoppingBtn();
         utils.click(continueShoppingBtn);
+        log.info("Clicked Continue Shopping — navigating back to dashboard");
     }
 
+    @Step("Check cart is empty")
     public boolean isCartEmpty() {
-        return productNames.isEmpty();
+        boolean empty = productNames.isEmpty();
+        log.debug("Cart is empty: {}", empty);
+        return empty;
     }
 
+    @Step("Click Checkout button")
     public void clickCheckoutButton() {
+        log.debug("Clicking Checkout button");
         utils.waitForElementVisible(checkoutBoxLocator);
         utils.clickUsingActions(checkoutBoxLocator);
+        log.info("Clicked Checkout — navigating to Place Order page");
     }
 
+    @Step("Get product names from cart")
     public List<String> getProductNames() {
-        List<String> names = productNames.stream().map(element -> element.getText().toUpperCase())
+        List<String> names = productNames.stream()
+                .map(e -> e.getText().toUpperCase())
                 .collect(Collectors.toList());
+        log.debug("Cart product names: {}", names);
         return names;
     }
 
+    @Step("Get product prices from cart")
     public List<String> getProductPrices() {
-        return productPrices.stream()
-                .map(e -> e.getText())
-                .map(text -> text.replaceAll("MRP", "")   // remove everything before MRP
-                        .replaceAll(" ", ""))  // remove all whitespace
+        List<String> prices = productPrices.stream()
+                .map(e -> e.getText()
+                        .replaceAll("MRP", "")
+                        .replaceAll(" ", ""))
                 .collect(Collectors.toList());
+        log.debug("Cart product prices: {}", prices);
+        return prices;
     }
 
+    @Step("Get cart total")
     public String getTotal() {
-        return utils.getText(totalPrice).replaceAll("MRP", "").replaceAll(" ", "");
+        String total = utils.getText(totalPrice)
+                .replaceAll("MRP", "")
+                .replaceAll(" ", "");
+        log.debug("Cart total: {}", total);
+        return total;
     }
 }

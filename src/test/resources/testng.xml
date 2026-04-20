@@ -1,5 +1,8 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="Selenium UI Automation Framework">
+<suite name="Selenium UI Automation Framework" parallel="methods" thread-count="3" data-provider-thread-count="3">
+    <listeners>
+        <listener class-name="listeners.ScreenshotListener"/>
+    </listeners>
     <test name="Sample E-Commerce App">
         <classes>
             <class name="tests.LoginPageTest"/>

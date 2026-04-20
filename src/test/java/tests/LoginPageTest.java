@@ -1,6 +1,9 @@
 package tests;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.qameta.allure.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -8,9 +11,11 @@ import pages.LoginPage;
 import pages.ProductsDashboardPage;
 import utils.JSONReader;
 
+@Feature("Login")
 public class LoginPageTest extends BaseTest {
 
-    @DataProvider(name = "loginScenarios")
+    private static final Logger log = LogManager.getLogger(LoginPageTest.class);
+    @DataProvider(name = "loginScenarios", parallel = true)
     public Object[][] loginScenarios() {
         return new Object[][]{
                 {"TC_001"},
@@ -22,6 +27,10 @@ public class LoginPageTest extends BaseTest {
         };
     }
 
+
+    @Story("Data-driven login validation")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("Runs all login scenarios from JSON — valid, invalid, empty fields")
     @Test(dataProvider = "loginScenarios",
             description = "Data-driven login validation")
     public void validateLoginScenario(String tcId) {
@@ -32,8 +41,9 @@ public class LoginPageTest extends BaseTest {
         String expectedMessage = data.get("expectedMessage").asText();
         String assertionType = data.get("assertionType").asText();
 
-        LoginPage loginPage = new LoginPage(driver);
-        ProductsDashboardPage dashboard = new ProductsDashboardPage(driver);
+        log.info("Login and assertionType : ", assertionType);
+        LoginPage loginPage = new LoginPage(getDriver());
+        ProductsDashboardPage dashboard = new ProductsDashboardPage(getDriver());
 
         loginPage.performLogin(email, password);
 

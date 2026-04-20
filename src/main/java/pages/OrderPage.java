@@ -1,5 +1,8 @@
 package pages;
 
+import io.qameta.allure.Step;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -11,14 +14,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class OrderPage {
+
+    private static final Logger log = LogManager.getLogger(OrderPage.class);
+
     WebDriver driver;
     SeleniumUtils utils;
-
-    public OrderPage(WebDriver driver) {
-        this.driver = driver;
-        this.utils = new SeleniumUtils(driver);
-        PageFactory.initElements(driver, this);
-    }
 
     @FindBy(css = "h1.hero-primary")
     WebElement headingElement;
@@ -29,38 +29,56 @@ public class OrderPage {
     @FindBy(css = "table.order-summary td.line-item[style*='right'] div.title")
     List<WebElement> productPrices;
 
-    @FindBy(xpath = "//button[normalize-space()='Click To Download Order Details in CSV']")
-    WebElement downloadBtn;
+    private By heading = By.cssSelector("h1.hero-primary");
 
-    By heading = By.cssSelector("h1.hero-primary");
+    public OrderPage(WebDriver driver) {
+        this.driver = driver;
+        this.utils  = new SeleniumUtils(driver);
+        PageFactory.initElements(driver, this);
+        log.debug("OrderPage initialised");
+    }
 
+    @Step("Wait for order confirmation heading")
     public void waitForHeading() {
+        log.debug("Waiting for order confirmation heading to appear");
         utils.waitForElementVisible(heading);
+        log.debug("Order confirmation heading is visible");
     }
 
-    public List<String> getProductNames() {
-        waitForHeading();
-        return productNames.stream()
-                .map(e -> e.getText().trim().toUpperCase())
-                .collect(Collectors.toList());
-    }
-
-    public List<String> getProductPrices() {
-        waitForHeading();
-
-        return productPrices.stream()
-                .map(e -> e.getText())
-                .map(text -> text.replaceAll(".*MRP", "")   // remove everything before MRP
-                        .replaceAll("\\s+", ""))  // remove all whitespace
-                .collect(Collectors.toList());
-    }
-
+    @Step("Get order confirmation heading text")
     public String getHeadingText() {
         waitForHeading();
-        return utils.getText(headingElement);
+        String text = utils.getText(headingElement);
+        log.debug("Order confirmation heading: [{}]", text);
+        return text;
     }
 
+    @Step("Get confirmed product names")
+    public List<String> getProductNames() {
+        waitForHeading();
+        List<String> names = productNames.stream()
+                .map(e -> e.getText().trim().toUpperCase())
+                .collect(Collectors.toList());
+        log.debug("Order confirmation product names: {}", names);
+        return names;
+    }
+
+    @Step("Get confirmed product prices")
+    public List<String> getProductPrices() {
+        waitForHeading();
+        List<String> prices = productPrices.stream()
+                .map(e -> e.getText()
+                        .replaceAll(".*MRP", "")
+                        .replaceAll("\\s+", ""))
+                .collect(Collectors.toList());
+        log.debug("Order confirmation product prices: {}", prices);
+        return prices;
+    }
+
+    @Step("Get order confirmation page URL")
     public String getPageUrl() {
-        return driver.getCurrentUrl();
+        String url = driver.getCurrentUrl();
+        log.debug("Order confirmation URL: {}", url);
+        return url;
     }
 }
