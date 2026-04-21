@@ -22,10 +22,10 @@ public class ConfigReader {
     }
 
     public static String getProperty(String key) {
-        String value = properties.getProperty(key);
-        if (value == null) {
-            throw new RuntimeException("Property not found in config.properties: " + key);
+        String value = System.getProperty(key); // for Jenkins, sending props from mvn commandline
+        if (value != null && !value.isEmpty()) {
+            return value.trim();
         }
-        return value.trim();
+        return properties.getProperty(key);
     }
 }
