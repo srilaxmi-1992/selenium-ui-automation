@@ -42,7 +42,7 @@ public class LoginPage {
     @Step("Click Login button")
     public void clickLoginButton() {
         log.debug("Clicking Login button");
-        utils.click(login);
+        utils.clickUsingJS(login);
     }
 
     @Step("Perform login with email: {emailId}")

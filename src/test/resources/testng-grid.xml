@@ -1,0 +1,38 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Selenium UI Automation Framework" parallel="tests" thread-count="3">
+    <listeners>
+        <listener class-name="listeners.ScreenshotListener"/>
+        <listener class-name="listeners.RetryListener"/>
+    </listeners>
+    <test name="Login Tests">
+        <parameter name="browser" value="firefox"></parameter>
+        <classes>
+            <class name="tests.LoginPageTest"/>
+        </classes>
+    </test>
+    <test name="Product Dashboard Tests">
+        <parameter name="browser" value="chrome"></parameter>
+        <classes>
+            <class name="tests.ProductsDashboardTest"/>
+        </classes>
+    </test>
+    <test name="Place Order Tests">
+        <parameter name="browser" value="firefox"></parameter>
+        <classes>
+            <class name="tests.PlaceOrderTest"/>
+        </classes>
+    </test>
+    <test name="Cart Tests">
+        <parameter name="browser" value="chrome"></parameter>
+        <classes>
+            <class name="tests.MyCartTest"/>
+        </classes>
+    </test>
+    <test name="Order Tests">
+        <parameter name="browser" value="edge"></parameter>
+        <classes>
+            <class name="tests.OrderTest"/>
+        </classes>
+    </test>
+
+</suite>

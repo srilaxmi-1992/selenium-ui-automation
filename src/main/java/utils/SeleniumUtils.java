@@ -43,7 +43,7 @@ public class SeleniumUtils {
 
     public void click(By locator) {
         try {
-            WebElement el = wait.until(ExpectedConditions.elementToBeClickable(locator));
+            WebElement el = getWait().until(ExpectedConditions.elementToBeClickable(locator));
             el.click();
             log.debug("Clicked element: {}", el);
         } catch (Exception e) {
@@ -197,5 +197,26 @@ public class SeleniumUtils {
             log.error("Error checking elements:  {}", locator, e);
             throw new RuntimeException("Failed to get elements size :  " + e.getMessage());
         }
+    }
+
+    public void clickUsingJS(By locator){
+
+        WebElement element = getWait().until(
+                driver -> {
+                    WebElement el = driver.findElement(locator);
+                    if(el.isEnabled() && el.isDisplayed()){
+                        return el;
+                    }
+                    throw new RuntimeException("Exception found at finding the web element "+ locator);
+                }
+        );
+        ((JavascriptExecutor) driver)
+                .executeScript("arguments[0].scrollIntoView({block: 'center'});", element);
+
+        wait.until(ExpectedConditions.elementToBeClickable(element));
+
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+
+        log.info("Element Clicked "+locator);
     }
 }

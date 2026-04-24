@@ -102,7 +102,7 @@ public class ProductsDashboardPage {
         log.debug("Clicking cart button");
         waitForOverlayToDisappear();
         utils.waitForElement(cartBtn);
-        utils.click(cartBtn);
+        utils.clickUsingJS(cartBtn);
         log.info("Navigated to cart");
     }
 
