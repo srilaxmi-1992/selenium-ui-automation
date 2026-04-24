@@ -23,7 +23,7 @@ A production-grade **Java + Selenium 4 + TestNG** UI test automation framework b
 
 ## Overview
 
-This framework automates end-to-end UI tests for a sample e-commerce application ([rahulshettyacademy.com/client](https://rahulshettyacademy.com/client)). It covers the full user journey — Login → Products Dashboard → Cart → Place Order → Order Confirmation — across five test suites with **30+ test scenarios**.
+This framework automates end-to-end UI tests for a sample e-commerce application. It covers the full user journey — Login → Products Dashboard → Cart → Place Order → Order Confirmation — with **20+ test scenarios**.
 
 The framework was built with the following goals in mind:
 
@@ -269,9 +269,12 @@ mvn test \
   -Dremote=${params.remote}
 
 ```
+---
+## About Me
 
-About Me
-Srilaxmi Amaraneni
-QA Automation Engineer specializing in Selenium, Java, and scalable test automation frameworks, Currently upskilling
-in Playwright with JS/TS.
+QA Automation Engineer specializing in Selenium, Java, and scalable test automation frameworks.
+
+- 🔗 [LinkedIn](https://www.linkedin.com/in/navya-sivakoti)
+- 💻 [GitHub](https://github.com/NavyaSivakoti/javascript)
+
 ---
