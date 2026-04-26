@@ -274,7 +274,7 @@ mvn test \
 
 QA Automation Engineer specializing in Selenium, Java, and scalable test automation frameworks.
 
-- 🔗 [LinkedIn](https://www.linkedin.com/in/navya-sivakoti)
-- 💻 [GitHub](https://github.com/NavyaSivakoti/javascript)
+- 🔗 [LinkedIn](https://www.linkedin.com/in/srilaxmi-amaraneni/)
+- 💻 [GitHub](https://github.com/srilaxmi-1992/selenium-ui-automation)
 
 ---
